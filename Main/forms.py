@@ -2,8 +2,8 @@ from django import forms
 
 from .models import CustomUser
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-
 from .models import Address, Comment, CustomUser, Product
+from django.core.exceptions import ValidationError
 
 
 class SignUpForm(UserCreationForm):
@@ -77,6 +77,11 @@ class UserAddressForm(forms.ModelForm):
             "last_name_kana": forms.TextInput(attrs={"placeholder": "ツタコ"}),
         }
 
+    def clean_post(self):
+        post = self.cleaned_data['post']
+        if not post.isdigit() or len(post) != 7:
+            raise ValidationError("有効な郵便番号を入力してください")
+        return post
 
 class AvailableProductsForm(forms.Form):
     show_available = forms.BooleanField(

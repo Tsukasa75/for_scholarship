@@ -1,19 +1,16 @@
 .grid-container {
     display: grid;
-    grid-template-columns: 600px 458px; /* グリッドの列幅 */
+    grid-template-columns: 59% 39%; /* グリッドの列幅 */
     /* grid-template-rows: 100px 300px 100px; */
     /* row-gap: 10px; */
-    padding: 10px;
-    width: 430px;
-    margin-right: 16px;
-    margin-left: 16px;
-    justify-content: space-between;
+    width: 98%;
+    margin: 10px 2%; /* 上下10px, 左右2%で合計横幅100% */
     text-align: left;
 }
 
 .right {
-    margin-right: 45px;
-    margin-left: 45px;
+    margin-right: auto;
+    margin-left: auto;
 }
 
 .credit_card {
@@ -55,10 +52,53 @@
     border-bottom: 1px solid #000;
 }
 
-.payment_breakdown {
+
+/* 以下は購入詳細表示 */
+.breakdown {
     border: solid 1px #000;
-    width: 458px;
-    height: 202px;
+    width: 434px; /* figmaでは458*202だが、内余白を追加するためにpaddingを合わせて458*202にする */
+    height: 178px;
+    padding: 12px;
+    font-size: 24px;
+    font-weight: 400;
+}
+
+.breakdown_upper, .breakdown_lower {
+    clear: both; /* フロートの影響を受けて重ならにようにするため */
+    padding-right: 30px;
+    padding-left: 30px;
+}
+
+.breakdown_upper {
+    height: 39px; /* これで上と合わせて434*39px */
+    border-bottom: 1px solid #4ABDAC;
+}
+
+.lower_box {
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-top: 4px;
+}
+
+.breakdown_lower {
+    flex: 1;
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+}
+
+.letter-left {
+    float: left;
+}
+
+.letter-right {
+    float: right;
+}
+
+.payment_method2 > .letter-right {
+    font-size: 16px;
 }
 
 .icon_button {

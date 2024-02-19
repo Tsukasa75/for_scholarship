@@ -578,16 +578,22 @@ def exhibited_products(request, username):
 @login_required
 def payment_information(request, username):
     user = get_object_or_404(CustomUser, username=username)
-    customer_id = user.stripe_customer_id # CustomerオブジェクトIDを格納するフィールド名（任意）
-    card_list = stripe.Customer.list_payment_methods(
-            customer_id,# CustomerオブジェクトID
-            type="card",
-            )
-    context = {
-        "user": user,
-        "card_list": card_list,
-    }
-    return render(request, "payment_information.html", context)
+    if user.stripe_customer_id:
+        customer_id = user.stripe_customer_id # CustomerオブジェクトIDを格納するフィールド名（任意）
+        card_list = stripe.Customer.list_payment_methods(
+                customer_id,# CustomerオブジェクトID
+                type="card",
+                )
+        context = {
+            "user": user,
+            "card_list": card_list,
+        }
+        return render(request, "payment_information.html", context)
+    else:
+        context = {
+            "user": user
+        }
+        return render(request, "payment_information.html", context)
 
 
 # # WEBHOOKのシークレットキー

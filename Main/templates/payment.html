@@ -69,7 +69,6 @@
         </div>
         <div class="right">
             <form action="{% url 'payment_post' %}" method="post">
-                <input type="hidden" id="paymentAmountInput" name="amount" value="{{ product.price }}">
                 <div class="breakdown"><!-- 内訳 -->
                     <div class="breakdown_upper">
                         <div class="letter-left">商品代金</div>
@@ -95,6 +94,8 @@
                     <input type="hidden" name="card_number" value="{{ forloop.counter0 }}">
                     {% endfor %}
                     {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <input type="hidden" id="paymentAmountInput" name="amount" value="{{ product.price }}">
                     <button class="submit_button_icon" type="submit" onclick="selectedCard()">購入する</button>
                 </div>
             </form>

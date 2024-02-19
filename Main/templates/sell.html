@@ -122,7 +122,7 @@
         </div>
         <div class="sell-priceLabel">
             <div>販売価格(￥300～￥999999)</div>
-            <input class="sell-priceLabel_input type="number" min="300" max="999999" name="price" id="price" maxlength="6" oninput="calculate()" placeholder="商品の価格を入力" required>
+            <input class="sell-priceLabel_input" type="number" min="300" max="999999" name="price" id="price" maxlength="6" oninput="calculate()" placeholder="商品の価格を入力" required>
         </div>
         <div class="sell-box">
             <div class="sell-box_charge">販売手数料<span>￥200</span></div>
@@ -168,6 +168,7 @@
             var departmentMap = {
                 '総合人間学科': '総合人間学部',
                 '人文学科': '文学部',
+                '教育科学科':'教育学部',
                 '法学学科': '法学部',
                 '経済経営学科': '経済学部',
                 '理学科': '理学部',

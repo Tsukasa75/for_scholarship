@@ -24,9 +24,9 @@
                 {% endif %}
                 <span>いいね</span>
             </div>
-            {% if transacation is None %}
+            {% if transaction is None %}
                 {% if product.seller == user %}
-                    <a href="#" class="info-contents_edit">商品を編集する</a>
+                    <a href="{% url 'temporary' %}" class="info-contents_edit">商品を編集する</a>
                 {% else %}
                     <a href="{% url 'payment' user.username product.id %}" class="info-contents_buy">購入する</a>
                 {% endif %}
@@ -37,6 +37,8 @@
                     <a href="{% url 'temporary' %}" class="info-contents_transaction">取引画面へ</a>
                 {% elif transaction.seller == user %}
                     <a href="{% url 'temporary' %}" class="info-contents_transaction">取引画面へ</a>
+                {% else %}
+                    <a href="#" class="info-contents_sold">売り切れました</a>
                 {% endif %}
             {% endif %}
             <div class="info-contents_description">
@@ -90,7 +92,7 @@
                 </div>
                 <form method="POST" class="info-comment_form">
                     {% csrf_token %}
-                    <textarea name="text" cols="40" rows="5" placeholder="コメントする..." maxlength="200"></textarea>
+                    <textarea name="text" cols="40" rows="5" placeholder="コメントする..." maxlength="200" required></textarea>
                     <button type="submit">コメントを送信する</button>
                 </form>
             </div>
@@ -125,7 +127,7 @@
     <script type="text/javascript">
       document.getElementById('info-like_button').addEventListener('click', e => {
         e.preventDefault();
-        const url = '{% url "liked_products" username=user.username %}';
+        const url = '{% url "like_product" %}';
         fetch(url, {
           method: 'POST',
           body: `product_pk={{product.pk}}`,

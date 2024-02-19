@@ -28,7 +28,7 @@
                 {% if product.seller == user %}
                     <a href="#" class="info-contents_edit">商品を編集する</a>
                 {% else %}
-                    <a href="{% url 'payment' user.username %}" class="info-contents_buy">購入する</a>
+                    <a href="{% url 'payment' user.username product.id %}" class="info-contents_buy">購入する</a>
                 {% endif %}
             {% else %}
                 {% if product.is_available == False %}

@@ -55,9 +55,9 @@ urlpatterns = [
         name="payment_information",
     ),
     path("create_card/<str:username>/", views.create_card, name="create_card"),
-    path("payment/<str:username>/", views.payment, name="payment"),
+    path("payment/<str:username>/<int:product_id>/", views.payment, name="payment"),
     path("payment_post/", views.payment_post, name="payment_post"),
-    path("payment_compelete/", views.payment_complete, name="payment_complete"),
+    path("payment_compelete/<str:username>/<int:product_id>/", views.payment_complete, name="payment_complete"),
     path("thanks/", views.thanks, name="thanks"),
     path(
         "exhibited_products/<str:username>/",

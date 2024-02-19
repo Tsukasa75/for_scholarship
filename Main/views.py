@@ -655,11 +655,12 @@ def like_product(request):
 
 
 @login_required
-def payment(request, username):
+def payment(request, username, product_id):
     user = get_object_or_404(CustomUser, username=username)
+    product = get_object_or_404(Product, id=product_id)
     address = Address.objects.filter(user=user)
     customer_id = user.stripe_customer_id  # CustomerオブジェクトIDを格納するフィールド名（任意）
-    price = 2000
+    # price = 2000
     card_list = stripe.Customer.list_payment_methods(
             customer_id,# CustomerオブジェクトID
             type="card",
@@ -668,7 +669,7 @@ def payment(request, username):
     context = {
         "user": user,
         "address": address[0], # そのユーザーのアドレスの1個目の情報を取得
-        "price": price,
+        "product": product,
         "card_list": card_list,
         "last_card": last_card,
     }
@@ -676,8 +677,9 @@ def payment(request, username):
 
 
 @login_required
-def payment_post(request):
-    user = request.user
+def payment_post(request, username, product_id):
+    user = get_object_or_404(CustomUser, username=username)
+    product = get_object_or_404(Product, id=product_id)
     customer_id = user.stripe_customer_id
 
     stripe_card = stripe.Customer.list_payment_methods(
@@ -701,11 +703,28 @@ def payment_post(request):
     )
     # PaymentIntentオブジェクトIDをDBに保存する場合は、「payment_intent.id」をsave()でDB保存する
 
-    return redirect("payment_complete")
+    return redirect("payment_complete", username=user.username, product_id=product.id)
 
 
-def payment_complete(request):
-    return render(request, "payment_complete.html")
+def payment_complete(request, username, product_id):
+    user = get_object_or_404(CustomUser, username=username)
+    product = get_object_or_404(Product, id=product_id)
+    address = Address.objects.filter(user=user)
+    customer_id = user.stripe_customer_id  # CustomerオブジェクトIDを格納するフィールド名（任意）
+    # price = 2000
+    card_list = stripe.Customer.list_payment_methods(
+            customer_id,# CustomerオブジェクトID
+            type="card",
+            )
+    last_card = card_list.data[-1] if card_list.data else None # 最新のカード情報を取得
+    context = {
+        "user": user,
+        "address": address[0], # そのユーザーのアドレスの1個目の情報を取得
+        "product": product,
+        "card_list": card_list,
+        "last_card": last_card,
+    }
+    return render(request, "payment_complete.html", context)
 
 
 @login_required

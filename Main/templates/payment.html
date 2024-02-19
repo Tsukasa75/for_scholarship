@@ -28,40 +28,52 @@
 <main>
     <div class="grid-container">
         <div class="left">
-            <div>
-                <div><img src="" alt=""></div>
-                <span>*******(教材名)</span>
+            <div class="product_detail">
+                <div><img src="{{ product.image.url }}" class="product_image" alt="product image"></div>
+                <span class="product_name">{{ product.product_name }}</span>
             </div>
             <div class="point">
-                ポイントを使用する<br>所有ポイント p <span id="own_point">{{ user.point }}</span>
-                p
-                <input type="number" step="1" class="point_input" id="pointInput" value="0" min="0" max="{{ user.point }}">
-                <button onclick="applyPoint()">確定</button>
+                <div class="point_text">
+                    ポイントを使用する<br>
+                    <span class="own_point">
+                        所有ポイントp<span id="own_point_value">{{ user.point }}</span>
+                    </span>
+                </div>
+                <div class="point_value">
+                    <span class="p_head">p</pspan>
+                    <input type="number" step="1" class="point_input" id="pointInput" value="0" min="0" max="{{ user.point }}">
+                    <button onclick="applyPoint()">確定</button>
+                </div>
             </div>
             <div class="payment_method">
                 <div>支払い方法</div>
                 <div class="credit_card">
-                    <div class="img"><img src="{% static 'media/Visa_Brandmark_Blue_RGB_2021.svg' %}" alt="VISAのロゴ" class="logo_visa"></div>
-                    <div class="credit_letter">
-                        <span>クレジットカード決済<br>
-                            ************{{ last_card.card.last4 }}</span>                    
+                    <div class="method_details">
+                        <div class="img"><img src="{% static 'media/Visa_Brandmark_Blue_RGB_2021.svg' %}" alt="VISAのロゴ" class="logo_visa"></div>
+                        <div class="credit_letter">
+                            <span>クレジットカード決済<br> ************{{ last_card.card.last4 }}</span>
+                        </div>
                     </div>
+                    <div class="change"><a href="">変更する</a></div>
                 </div>
-            </div>
+            </div>         
             <div class="send_to">
                 <div>お届け先情報</div>
-                <div class="send_to_letter">
-                    <span>{{ address.last_name }}{{ address.first_name }}<br>〒{{ address.post }}<br>{{ address.prefecture }}{{address.city}}{{address.house_number}}</span>
-                    <span><a href="{% url 'edit_address' username=user.username %}">変更する</a> </span>
+                <div class="send_to_info">
+                    <div class="send_to_letter">
+                        <span>{{ address.last_name }}{{ address.first_name }}<br>〒{{ address.post }}<br>{{ address.prefecture }}{{address.city}}{{address.house_number}}</span>
+                    </div>
+                    <div class="change"><a href="">変更する</a></div>
                 </div>
-            </div>
+            </div>            
         </div>
         <div class="right">
             <form action="{% url 'payment_post' %}" method="post">
+                <input type="hidden" id="paymentAmountInput" name="amount" value="{{ product.price }}">
                 <div class="breakdown"><!-- 内訳 -->
                     <div class="breakdown_upper">
                         <div class="letter-left">商品代金</div>
-                        <div class="letter-right">￥<span id="price">{{ price }}</span></div>
+                        <div class="letter-right">￥<span id="price">{{ product.price }}</span></div>
                     </div>
                     <div class="lower_box">
                         <div class="breakdown_lower">
@@ -70,7 +82,7 @@
                         </div>
                         <div class="breakdown_lower">
                             <div class="letter-left">支払い金額</div>
-                            <div class="letter-right">￥<span id="paymentAmount">{{ price }}</span></div>
+                            <div class="letter-right">￥<span id="paymentAmount">{{ product.price }}</span></div>
                         </div>
                         <div class="breakdown_lower payment_method2">
                             <div class="letter-left">支払い方法</div>

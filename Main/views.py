@@ -688,9 +688,8 @@ def payment(request, username, product_id):
 
 
 @login_required
-def payment_post(request, username, product_id):
-    user = get_object_or_404(CustomUser, username=username)
-    product = get_object_or_404(Product, id=product_id)
+def payment_post(request):
+    user = request.user
     customer_id = user.stripe_customer_id
 
     stripe_card = stripe.Customer.list_payment_methods(
@@ -702,6 +701,8 @@ def payment_post(request, username, product_id):
     card_number = request.POST.get("card_number")
     selected_card = stripe_card["data"][int(card_number)]["id"]
     amount = request.POST.get("amount")
+    if not amount.isdigit():
+        raise ValueError(f"Invalid amount: {amount}")
 
     # これで支払の処理を完了する
     stripe.PaymentIntent.create(
@@ -714,7 +715,7 @@ def payment_post(request, username, product_id):
     )
     # PaymentIntentオブジェクトIDをDBに保存する場合は、「payment_intent.id」をsave()でDB保存する
 
-    return redirect("payment_complete", username=user.username, product_id=product.id)
+    return redirect("payment_complete", username=user.username, product_id=request.POST.get('product_id'))
 
 
 def payment_complete(request, username, product_id):

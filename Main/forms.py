@@ -21,6 +21,7 @@ class SignUpAuthForm(forms.Form):
         label="", widget=forms.NumberInput(attrs={"type": "number"})
     )
 
+
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.EmailField()
 
@@ -58,6 +59,7 @@ class UserAddressForm(forms.ModelForm):
             "city",
             "house_number",
             "building",
+            "phone",
         ]
         labels = {
             "first_name": "名",
@@ -69,6 +71,7 @@ class UserAddressForm(forms.ModelForm):
             "city": "市町村",
             "house_number": "番地",
             "building": "建物",
+            "phone": "電話番号",
         }
         widgets = {
             "first_name": forms.TextInput(attrs={"placeholder": "つた村"}),

@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 
+import environ
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -162,3 +164,16 @@ GIT_PATH = "/usr/bin/git"
 STRIPE_API_KEY = "sk_test_51OZnnyAiXkxmyRDeD8awXPlAHIIT7OJXDLrJqUTZOy6u1RCDbMxmmsx2nYRgeGT1nAtrp4RJyTRBLHd23s6A6ofE00yqDq2Czd"
 STRIPE_PUBLISHABLE_KEY = "pk_test_51OZnnyAiXkxmyRDeucSGGEKApynBgv8EeBdFF7IjOnxPtonAH31dmwqktZNmCM4wxs5UmbQXOzjoMQMTWPUql3A000ehqwxHwe"
 STRIPE_API_PUBLIC_KEY = "pk_test_51OZnnyAiXkxmyRDeucSGGEKApynBgv8EeBdFF7IjOnxPtonAH31dmwqktZNmCM4wxs5UmbQXOzjoMQMTWPUql3A000ehqwxHwe"
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# ...
+# デプロイ環境のための設定(追加)
+if os.path.isfile(".env"):  # .envファイルが存在しない時にもエラーが発生しないようにする
+    env = environ.Env(
+        DEBUG=(bool, False),
+    )
+    environ.Env.read_env(".env")
+
+    DEBUG = env("DEBUG")
+    ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")

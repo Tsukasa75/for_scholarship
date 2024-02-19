@@ -382,7 +382,7 @@ def delete_profile(request, username):
 
     return render(request, "delete_profile.html", context)
 
-
+@login_required
 def edit_address(request, username):
     user = get_object_or_404(CustomUser, username=username)
 
@@ -575,10 +575,18 @@ def exhibited_products(request, username):
 
     return render(request, "exhibited_products.html", context)
 
-
+@login_required
 def payment_information(request, username):
     user = get_object_or_404(CustomUser, username=username)
-    context = {"user": user}
+    customer_id = user.stripe_customer_id # CustomerオブジェクトIDを格納するフィールド名（任意）
+    card_list = stripe.Customer.list_payment_methods(
+            customer_id,# CustomerオブジェクトID
+            type="card",
+            )
+    context = {
+        "user": user,
+        "card_list": card_list,
+    }
     return render(request, "payment_information.html", context)
 
 
@@ -586,19 +594,32 @@ def payment_information(request, username):
 # endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
 
 
+@login_required
 def create_card(request, username):
     user = get_object_or_404(CustomUser, username=username)
-    stripe_customer = stripe.Customer.create(
-        name=user.username,
-    )
-    setup_intent = stripe.SetupIntent.create(
-        customer=stripe_customer.id,  # 生成したCustomerのIDを指定
-        payment_method_types=["card"],
-    )
-    context = {
-        "client_secret": setup_intent.client_secret,
-    }
-    return render(request, "create_card.html", context)
+
+    if user.stripe_customer_id:
+        # 既存のCustomerを取得
+        stripe_customer = stripe.Customer.retrieve(user.stripe_customer_id)
+    else:
+        # 新規にCustomerを作成
+        stripe_customer = stripe.Customer.create(name=user.username)
+        user.stripe_customer_id = stripe_customer.id
+        user.save()
+
+    if request.method == 'POST':
+        stripe_success = request.POST.get('stripe_success')
+        if stripe_success == '1':
+            return redirect('payment_information', username=username)
+    else:
+        setup_intent = stripe.SetupIntent.create(
+            customer=stripe_customer.id,  # 生成したCustomerのIDを指定
+            payment_method_types=["card"],
+        )
+        context = {
+            "client_secret": setup_intent.client_secret,
+        }
+        return render(request, "create_card.html", context)
 
 
 def thanks(request):
@@ -638,26 +659,32 @@ def like_product(request):
     return JsonResponse(context)
 
 
-def payment(request, username):
+@login_required
+def payment(request, username, product_id):
     user = get_object_or_404(CustomUser, username=username)
+    product = get_object_or_404(Product, id=product_id)
     address = Address.objects.filter(user=user)
     customer_id = user.stripe_customer_id  # CustomerオブジェクトIDを格納するフィールド名（任意）
-    price = 2000
+    # price = 2000
     card_list = stripe.Customer.list_payment_methods(
-        customer_id,  # CustomerオブジェクトID
-        type="card",
-    )
+            customer_id,# CustomerオブジェクトID
+            type="card",
+            )
+    last_card = card_list.data[-1] if card_list.data else None # 最新のカード情報を取得
     context = {
         "user": user,
-        "address": address[0],
-        "price": price,
+        "address": address[0], # そのユーザーのアドレスの1個目の情報を取得
+        "product": product,
         "card_list": card_list,
+        "last_card": last_card,
     }
     return render(request, "payment.html", context)
 
 
-def payment_post(request):
-    user = request.user
+@login_required
+def payment_post(request, username, product_id):
+    user = get_object_or_404(CustomUser, username=username)
+    product = get_object_or_404(Product, id=product_id)
     customer_id = user.stripe_customer_id
 
     stripe_card = stripe.Customer.list_payment_methods(
@@ -681,11 +708,28 @@ def payment_post(request):
     )
     # PaymentIntentオブジェクトIDをDBに保存する場合は、「payment_intent.id」をsave()でDB保存する
 
-    return redirect("payment_complete")
+    return redirect("payment_complete", username=user.username, product_id=product.id)
 
 
-def payment_complete(request):
-    return render(request, "payment_complete.html")
+def payment_complete(request, username, product_id):
+    user = get_object_or_404(CustomUser, username=username)
+    product = get_object_or_404(Product, id=product_id)
+    address = Address.objects.filter(user=user)
+    customer_id = user.stripe_customer_id  # CustomerオブジェクトIDを格納するフィールド名（任意）
+    # price = 2000
+    card_list = stripe.Customer.list_payment_methods(
+            customer_id,# CustomerオブジェクトID
+            type="card",
+            )
+    last_card = card_list.data[-1] if card_list.data else None # 最新のカード情報を取得
+    context = {
+        "user": user,
+        "address": address[0], # そのユーザーのアドレスの1個目の情報を取得
+        "product": product,
+        "card_list": card_list,
+        "last_card": last_card,
+    }
+    return render(request, "payment_complete.html", context)
 
 
 @login_required

@@ -11,7 +11,6 @@ function applyPoint() {
     const paymentAmount = document.getElementById('paymentAmount');
     const amount = price - usePoint; // 使用ポイントを計算
     paymentAmount.textContent = amount; // 支払い金額を表示
-
     // フォームのamountにも設定する
     document.getElementById('paymentAmountInput').value = amount;
 }

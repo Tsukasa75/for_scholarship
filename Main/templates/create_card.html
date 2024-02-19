@@ -32,13 +32,14 @@
     <!--フォームが読み込まれたら、Payment Elementのインスタンスを作成して、それをコンテナーのDOMノードにマウントする-->
     <form id="payment-form">
         {% csrf_token %}
+        <input type="hidden" name="stripe_success" id="stripe_success">
         <div id="payment-element">
         <!-- クレジットカード入力フォームが挿入される部分 -->
         </div>
         <div id="error-message">
         <!-- エラーが起こった場合のメッセージ -->
         </div>
-        <button class="submit_button_icon" id="submit">更新する</button>
+        <button class="submit_button_icon" id="submit-button">更新する</button>
     </form>
     
     <script src="{% static 'js/stripe.js' %}"></script>

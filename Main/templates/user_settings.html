@@ -75,7 +75,7 @@
         <div class="right_title">アカウント</div>
         <div class="right_content"><a href="{% url 'edit_profile' username=user.username %}">プロフィール設定</a></div>
         <div class="right_content"><a href="{% url 'edit_address' username=user.username %}">住所設定</a></div>
-        <div class="right_content"><a href="{% url 'temporary' %}">支払い設定</a></div>
+        <div class="right_content"><a href="{% url 'payment_information' username=user.username %}">支払い設定</a></div>
         <div class="right_content"><a href="{% url 'temporary' %}">メールアドレス変更</a></div>
         <div class="right_content"><a href="{% url 'temporary' %}">パスワード変更</a></div>
         <div class="account_delete"><a href="{% url 'delete_profile' username=user.username %}">アカウント削除</a></div>
